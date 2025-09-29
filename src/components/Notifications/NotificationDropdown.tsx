@@ -92,7 +92,7 @@ export const NotificationDropdown: React.FC = () => {
 
             {/* Notifications List */}
             <div className="max-h-96 overflow-y-auto">
-              {notifications.map((notification, index) => (
+              {notifications.map((notification) => (
                 <div
                   key={notification.id}
                   className={`p-4 hover:bg-gray-50 transition-colors duration-150 border-b border-gray-50 last:border-b-0 ${

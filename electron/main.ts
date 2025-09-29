@@ -42,6 +42,11 @@ function createWindow() {
   mainWindow.once('ready-to-show', () => {
     mainWindow?.show();
     console.log('Application window loaded successfully');
+    
+    // Enable DevTools in development or for debugging
+    if (process.env.NODE_ENV === 'development' || process.env.DEBUG) {
+      mainWindow?.webContents.openDevTools();
+    }
   });
 
   // Handle page load errors
@@ -65,8 +70,16 @@ function createWindow() {
     // In production, load from built files
     const indexPath = path.join(__dirname, '../dist/index.html');
     console.log('Loading from file:', indexPath);
+    
+    // Use loadFile for better compatibility with file:// protocol
     mainWindow.loadFile(indexPath).catch((error) => {
       console.error('Failed to load file:', error);
+      // Fallback: try loading with file:// protocol
+      const fileUrl = `file://${indexPath}`;
+      console.log('Trying fallback URL:', fileUrl);
+      mainWindow?.loadURL(fileUrl).catch((fallbackError) => {
+        console.error('Fallback also failed:', fallbackError);
+      });
     });
   }
 

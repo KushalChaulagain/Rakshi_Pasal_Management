@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { MainLayout } from './components/Layout/MainLayout';
 import { LoadingSpinner } from './components/LoadingSpinner';
 
@@ -13,7 +13,7 @@ const PointOfSale = React.lazy(() =>
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Suspense fallback={<LoadingSpinner message="Loading application..." />}>
         <Routes>
           <Route path="/" element={<MainLayout />}>
@@ -31,7 +31,7 @@ function App() {
           </Route>
         </Routes>
       </Suspense>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
