@@ -14,6 +14,11 @@ const PointOfSale = React.lazy(() =>
     default: module.PointOfSale,
   }))
 );
+const ProductCatalog = React.lazy(() =>
+  import('./pages/Inventory/ProductCatalog').then(module => ({
+    default: module.ProductCatalog,
+  }))
+);
 
 function App() {
   return (
@@ -24,6 +29,7 @@ function App() {
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="pos" element={<PointOfSale />} />
+            <Route path="inventory" element={<ProductCatalog />} />
             <Route
               path="*"
               element={
