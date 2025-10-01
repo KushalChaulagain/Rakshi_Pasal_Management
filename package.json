@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:electron": "concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron -r ts-node/register/transpile-only src/main/app/main.ts\"",
+    "dev:electron": "concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron dist-electron/main.js\"",
     "build": "npm run type-check && npm run lint && npm run build:renderer && npm run build:main && electron-builder",
     "build:renderer": "vite build",
     "build:main": "tsc -p tsconfig.main.json",
@@ -93,6 +93,11 @@
       "dist/**/*",
       "dist-electron/**/*",
       "package.json"
+    ],
+    "asarUnpack": [
+      "dist-electron/preload.mjs",
+      "dist-electron/preload.js",
+      "dist-electron/preload/**/*"
     ],
     "extraMetadata": {
       "main": "dist-electron/main.js"

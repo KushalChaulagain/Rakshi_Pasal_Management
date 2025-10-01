@@ -1,4 +1,5 @@
 import { BrowserWindow, screen } from 'electron';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from '../../shared/config';
@@ -6,6 +7,51 @@ import { Logger } from '../utils/Logger';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Helper function to get the correct preload path
+function getPreloadPath(): string {
+  if (config.isDev) {
+    // In development, try multiple possible paths
+    const devPaths = [
+      path.join(__dirname, '../../preload.mjs'),
+      path.join(__dirname, '../preload.mjs'),
+      path.join(__dirname, 'preload.mjs'),
+    ];
+    
+    for (const devPath of devPaths) {
+      if (existsSync(devPath)) {
+        return devPath;
+      }
+    }
+    
+    // Fallback to the most likely path
+    return path.join(__dirname, '../../preload.mjs');
+  }
+  
+  // In production, try multiple possible paths based on vite-plugin-electron output
+  const possiblePaths = [
+    path.join(process.resourcesPath, 'app.asar.unpacked', 'dist-electron', 'preload.mjs'),
+    path.join(process.resourcesPath, 'app.asar.unpacked', 'dist-electron', 'preload.js'),
+    path.join(process.resourcesPath, 'app.asar.unpacked', 'dist-electron', 'preload', 'preload.js'),
+    path.join(__dirname, 'preload.mjs'),
+    path.join(__dirname, 'preload.js'),
+    path.join(__dirname, 'preload', 'preload.js'),
+  ];
+  
+  // Return the first path that exists, or fallback to the first one
+  for (const preloadPath of possiblePaths) {
+    try {
+      if (existsSync(preloadPath)) {
+        return preloadPath;
+      }
+    } catch (error) {
+      // Continue to next path
+    }
+  }
+  
+  // Fallback to the most likely path (vite-plugin-electron outputs to dist-electron/preload.js)
+  return possiblePaths[0];
+}
 
 export class WindowManager {
   private mainWindow: BrowserWindow | null = null;
@@ -22,6 +68,12 @@ export class WindowManager {
       const x = Math.round((screenWidth - config.window.width) / 2);
       const y = Math.round((screenHeight - config.window.height) / 2);
 
+      // Log preload path for debugging
+      const preloadPath = getPreloadPath();
+      this.logger.info('Using preload path:', preloadPath);
+      this.logger.info('Process resources path:', process.resourcesPath);
+      this.logger.info('__dirname:', __dirname);
+
       this.mainWindow = new BrowserWindow({
         width: config.window.width,
         height: config.window.height,
@@ -33,8 +85,9 @@ export class WindowManager {
           nodeIntegration: false,
           contextIsolation: true,
           sandbox: true,
-          preload: path.join(__dirname, '../../preload/preload.js'),
-          webSecurity: true,
+          preload: getPreloadPath(),
+          webSecurity: false, // Allow loading local resources in production
+          allowRunningInsecureContent: true,
         },
         frame: true,
         backgroundColor: '#f9fafb',
@@ -91,17 +144,38 @@ export class WindowManager {
     }
 
     try {
-      if (config.isDev && process.env.VITE_DEV_SERVER_URL) {
-        this.logger.info(
-          'Loading from Vite dev server:',
-          process.env.VITE_DEV_SERVER_URL
-        );
-        await this.mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
+      if (config.isDev) {
+        // In development, load from Vite dev server
+        const devServerUrl = 'http://localhost:5173/';
+        this.logger.info('Loading from Vite dev server:', devServerUrl);
+        await this.mainWindow.loadURL(devServerUrl);
       } else {
         // In production, load from built files
+        // The dist folder is packaged in app.asar, so we need to use the correct path
         const indexPath = path.join(__dirname, '../../../dist/index.html');
         this.logger.info('Loading from file:', indexPath);
-        await this.mainWindow.loadFile(indexPath);
+        this.logger.info('File exists:', existsSync(indexPath));
+        this.logger.info('__dirname:', __dirname);
+        this.logger.info('process.resourcesPath:', process.resourcesPath);
+        
+        // For packaged apps, we need to use the correct path
+        // Try the standard path first - Electron should handle asar files automatically
+        try {
+          await this.mainWindow.loadFile(indexPath);
+          this.logger.info('Successfully loaded index.html');
+        } catch (loadError) {
+          this.logger.error('Failed to load with standard path:', loadError);
+          
+          // Fallback: try loading with URL format
+          try {
+            const fileUrl = `file://${indexPath.replace(/\\/g, '/')}`;
+            this.logger.info('Trying URL format:', fileUrl);
+            await this.mainWindow.loadURL(fileUrl);
+          } catch (urlError) {
+            this.logger.error('Failed to load with URL format:', urlError);
+            throw urlError;
+          }
+        }
       }
     } catch (error) {
       this.logger.error('Failed to load application:', error);
@@ -110,11 +184,11 @@ export class WindowManager {
   }
 
   private handleLoadError(): void {
-    if (config.isDev && process.env.VITE_DEV_SERVER_URL) {
+    if (config.isDev) {
       // Retry loading after a delay in development
       setTimeout(() => {
-        if (this.mainWindow && process.env.VITE_DEV_SERVER_URL) {
-          this.mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
+        if (this.mainWindow) {
+          this.mainWindow.loadURL('http://localhost:5173/');
         }
       }, 2000);
     }
