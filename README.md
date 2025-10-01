@@ -1,183 +1,202 @@
-# Liquor Store Management System
+# 🍷 Liquor Store Management System
 
-A comprehensive, locally-deployed liquor store management system with a .NET Core backend and Electron desktop frontend.
+A professional desktop application built with Electron, React, and TypeScript for managing liquor store operations including inventory, point of sale, and analytics.
 
-## Features
+## ✨ Features
 
-- **Inventory Management**: Product catalog, stock tracking, barcode scanning, supplier management
-- **Point of Sale (POS)**: Sales transactions, customer management, age verification
-- **Reporting & Analytics**: Sales reports, profitability analysis, trend analysis
-- **System Administration**: User management, role-based access control, audit trails
+- **📊 Dashboard**: Real-time analytics and key performance indicators
+- **🛒 Point of Sale**: Complete transaction management with age verification
+- **📦 Inventory Management**: Product catalog, stock tracking, and low stock alerts
+- **👥 Customer Management**: Customer database with age verification tracking
+- **📈 Reports & Analytics**: Sales reports, profitability analysis, and trend tracking
+- **🔧 Administration**: User management, system settings, and data backup
 
-## Tech Stack
+## 🏗️ Architecture
 
-### Frontend
-- **Electron** - Desktop application wrapper
-- **React 18** - UI framework
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
-- **Recharts** - Data visualization
-- **React Query** - Server state management
-- **Zustand** - Client state management
-- **React Router** - Navigation
+This application follows professional Electron architecture patterns:
 
-### Backend
-- **.NET Core 8** - RESTful API
-- **Entity Framework Core** - ORM
-- **SQL Server Express / SQLite** - Database
-- **JWT Authentication** - Security
-- **Serilog** - Logging
+```
+src/
+├── main/                 # Main process (Electron backend)
+│   ├── app/             # Core application logic
+│   ├── ipc/             # Inter-process communication
+│   ├── windows/         # Window management
+│   └── utils/           # Main process utilities
+├── renderer/            # Renderer process (React frontend)
+│   ├── components/      # Reusable UI components
+│   ├── pages/           # Page components
+│   ├── hooks/           # Custom React hooks
+│   ├── services/        # API services
+│   ├── stores/          # State management
+│   └── utils/           # Utility functions
+├── preload/             # Preload scripts
+├── shared/              # Shared code between processes
+└── types/               # TypeScript definitions
+```
 
-## Prerequisites
+## 🚀 Getting Started
 
-- **Node.js** 18+ and npm
-- **.NET 8 SDK**
-- **SQL Server Express** or **SQLite**
+### Prerequisites
 
-## Installation
+- Node.js 18+
+- npm or yarn
+- Git
 
-### 1. Clone the repository
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone <repository-url>
+   cd Liquor_Management_System
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Start development server**
+   ```bash
+   npm run dev:electron
+   ```
+
+### Available Scripts
+
+| Script                  | Description                        |
+| ----------------------- | ---------------------------------- |
+| `npm run dev`           | Start Vite development server      |
+| `npm run dev:electron`  | Start Electron in development mode |
+| `npm run build`         | Build for production               |
+| `npm run build:win`     | Build Windows executable           |
+| `npm run build:mac`     | Build macOS application            |
+| `npm run build:linux`   | Build Linux application            |
+| `npm run lint`          | Run ESLint                         |
+| `npm run lint:fix`      | Fix ESLint issues                  |
+| `npm run format`        | Format code with Prettier          |
+| `npm run test`          | Run tests                          |
+| `npm run test:ui`       | Run tests with UI                  |
+| `npm run test:coverage` | Run tests with coverage            |
+| `npm run type-check`    | Run TypeScript type checking       |
+| `npm run clean`         | Clean build directories            |
+
+## 🛠️ Development
+
+### Code Quality
+
+This project enforces high code quality standards:
+
+- **ESLint**: Code linting with TypeScript support
+- **Prettier**: Code formatting
+- **Husky**: Git hooks for pre-commit checks
+- **lint-staged**: Run linters on staged files
+- **TypeScript**: Static type checking
+
+### Testing
+
+- **Vitest**: Fast unit testing framework
+- **React Testing Library**: Component testing utilities
+- **jsdom**: DOM environment for tests
+- **Coverage**: Code coverage reporting
+
+### Project Structure
+
+- **Modular Architecture**: Clear separation between main and renderer processes
+- **Type Safety**: Full TypeScript coverage
+- **Error Handling**: Comprehensive error handling and logging
+- **Security**: Context isolation and secure IPC communication
+- **Performance**: Optimized builds and lazy loading
+
+## 📦 Building
+
+### Development Build
+
 ```bash
-git clone <repository-url>
-cd Liquor_Management_System
+npm run dev:electron
 ```
 
-### 2. Install Frontend Dependencies
-```bash
-npm install
-```
+### Production Build
 
-### 3. Setup Backend
-```bash
-cd Backend
-dotnet restore
-dotnet ef database update
-cd ..
-```
-
-### 4. Configure Environment
-Create a `.env` file in the root:
-```env
-VITE_API_URL=http://localhost:5000/api
-```
-
-## Development
-
-### Run Frontend (Electron + React)
-```bash
-npm run dev
-```
-
-This will:
-1. Start Vite dev server on `http://localhost:5173`
-2. Launch Electron app that loads the dev server
-
-### Run Backend (.NET API)
-```bash
-cd Backend
-dotnet run
-```
-
-The API will run on `http://localhost:5000`
-
-## Building for Production
-
-### Build Frontend
 ```bash
 npm run build
 ```
 
-### Build Windows Installer
+### Platform-Specific Builds
+
 ```bash
-npm run build:win
+npm run build:win    # Windows
+npm run build:mac    # macOS
+npm run build:linux  # Linux
 ```
 
-### Build macOS App
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+NODE_ENV=development
+```
+
+### Build Configuration
+
+The application uses `electron-builder` for packaging. Configuration is in `package.json` under the `build` section.
+
+## 🧪 Testing
+
+### Run Tests
+
 ```bash
-npm run build:mac
+npm run test
 ```
 
-### Build Linux AppImage
+### Run Tests with UI
+
 ```bash
-npm run build:linux
+npm run test:ui
 ```
 
-## Project Structure
+### Run Tests with Coverage
 
-```
-Liquor_Management_System/
-├── electron/               # Electron main process
-│   ├── main.ts
-│   └── preload.ts
-├── src/                    # React frontend
-│   ├── pages/              # Page components
-│   ├── components/         # Reusable components
-│   ├── services/           # API services
-│   ├── hooks/              # Custom hooks
-│   ├── stores/             # State management
-│   ├── types/              # TypeScript types
-│   └── utils/              # Utilities
-├── Backend/                # .NET Core API
-│   ├── LiquorStore.API/
-│   ├── LiquorStore.Core/
-│   ├── LiquorStore.Infrastructure/
-│   └── LiquorStore.Services/
-├── .cursor/rules/          # Cursor AI rules
-└── package.json
+```bash
+npm run test:coverage
 ```
 
-## Key Features
+## 📝 Contributing
 
-### Dashboard
-- Today's sales, inventory value, transactions
-- Weekly sales chart
-- Top selling products
-- Low stock alerts
-- Recent transactions
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-### Point of Sale
-- Quick product search and barcode scanning
-- Category-based browsing
-- Shopping cart
-- Age verification prompts
-- Multiple payment methods
+### Code Style
 
-### Inventory Management
-- Product catalog with detailed information
-- Stock level tracking
-- Low stock alerts with priority levels
-- Supplier management
-- Barcode support
+- Follow the existing code style
+- Use TypeScript for all new code
+- Write tests for new features
+- Update documentation as needed
 
-### Reports & Analytics
-- Sales reports (daily, weekly, monthly, yearly)
-- Profitability analysis
-- Inventory turnover metrics
-- Trend analysis and forecasting
-- Export to PDF/Excel
+## 📄 License
 
-## Configuration
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### Backend API URL
-Update `src/services/api.ts` or `.env` file:
-```typescript
-const API_BASE_URL = process.env.VITE_API_URL || 'http://localhost:5000/api';
-```
+## 🤝 Support
 
-### Database Connection
-Update `Backend/appsettings.json`:
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=.\\SQLEXPRESS;Database=LiquorStore;Trusted_Connection=true;"
-  }
-}
-```
+For support, email support@liquorstore.com or create an issue in the repository.
 
-## License
+## 🎯 Roadmap
 
-MIT
+- [ ] Backend API integration
+- [ ] Database integration
+- [ ] User authentication
+- [ ] Advanced reporting
+- [ ] Mobile companion app
+- [ ] Cloud synchronization
 
-## Support
+---
 
-For issues and questions, please create an issue in the repository.
+**Built with ❤️ using Electron, React, and TypeScript**
