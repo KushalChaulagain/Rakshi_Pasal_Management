@@ -5,7 +5,7 @@ echo.
 echo Checking for available executables...
 set "found_exe="
 
-REM Check release directory
+REM Check for portable exe (if it exists)
 if exist "release\Liquor Store Management System 1.0.1 Portable.exe" (
     echo ✓ Portable exe found in release directory
     set "found_exe=release\Liquor Store Management System 1.0.1 Portable.exe"
@@ -13,9 +13,10 @@ if exist "release\Liquor Store Management System 1.0.1 Portable.exe" (
     echo ✗ Portable exe not found in release directory
 )
 
-if exist "release\win-unpacked\Liquor Store Management System.exe" (
+REM Check for unpacked exe (main executable)
+if exist "release\win-unpacked\win-unpacked\Liquor Store Management System.exe" (
     echo ✓ Unpacked exe found in release directory
-    if not defined found_exe set "found_exe=release\win-unpacked\Liquor Store Management System.exe"
+    if not defined found_exe set "found_exe=release\win-unpacked\win-unpacked\Liquor Store Management System.exe"
 ) else (
     echo ✗ Unpacked exe not found in release directory
 )

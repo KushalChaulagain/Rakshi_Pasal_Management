@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { AlertTriangle, Plus } from 'lucide-react';
 import React, { useState } from 'react';
 
 interface Product {
@@ -11,6 +11,7 @@ interface Product {
   image: string;
   lowStock: boolean;
   outOfStock: boolean;
+  isAlcoholic: boolean;
 }
 
 const products: Product[] = [
@@ -24,6 +25,7 @@ const products: Product[] = [
     image: '/products/jack-daniels.jpg',
     lowStock: false,
     outOfStock: false,
+    isAlcoholic: true,
   },
   {
     id: 2,
@@ -35,6 +37,7 @@ const products: Product[] = [
     image: '/products/grey-goose.jpg',
     lowStock: true,
     outOfStock: false,
+    isAlcoholic: true,
   },
   {
     id: 3,
@@ -46,6 +49,7 @@ const products: Product[] = [
     image: '/products/corona.jpg',
     lowStock: false,
     outOfStock: true,
+    isAlcoholic: true,
   },
   {
     id: 4,
@@ -57,6 +61,19 @@ const products: Product[] = [
     image: '/products/patron.jpg',
     lowStock: false,
     outOfStock: false,
+    isAlcoholic: true,
+  },
+  {
+    id: 5,
+    name: 'Red Bull Energy Drink 4-Pack',
+    sku: 'SKU006',
+    category: 'Energy Drinks',
+    price: 12.99,
+    stock: 50,
+    image: '/products/red-bull.jpg',
+    lowStock: false,
+    outOfStock: false,
+    isAlcoholic: false,
   },
 ];
 
@@ -106,64 +123,102 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ searchQuery }) => {
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 gap-6">
         {filteredProducts.map(product => (
           <div
             key={product.id}
-            className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
+            className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-lg transition-shadow"
           >
-            {/* Product Image */}
-            <div className="h-48 bg-gray-100 flex items-center justify-center relative">
-              <div className="text-gray-400 text-6xl">🥃</div>
-              {product.outOfStock && (
-                <div className="absolute top-2 right-2">
-                  <span className="px-3 py-1 bg-red-500 text-white rounded text-xs font-medium">
-                    Out of Stock
-                  </span>
-                </div>
-              )}
-              {product.lowStock && !product.outOfStock && (
-                <div className="absolute top-2 right-2">
-                  <span className="px-3 py-1 bg-orange-500 text-white rounded text-xs font-medium">
-                    Low Stock
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Product Info */}
-            <div className="p-4">
-              <h4 className="font-semibold text-gray-900 mb-1">
-                {product.name}
-              </h4>
-              <p className="text-sm text-gray-500 mb-1">{product.sku}</p>
-              <p className="text-xs text-gray-400 mb-3">{product.category}</p>
-
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    ${product.price}
-                  </p>
-                  <p className="text-xs text-orange-600 mt-1">
-                    {product.stock} in stock
-                  </p>
-                </div>
-                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm font-medium">
-                  21+
-                </span>
+            <div className="flex items-start space-x-4">
+              {/* Product Image */}
+              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                {product.category === 'Whiskey' && (
+                  <div className="text-2xl">🥃</div>
+                )}
+                {product.category === 'Vodka' && (
+                  <div className="w-12 h-12 bg-gray-600 rounded"></div>
+                )}
+                {product.category === 'Beer' && (
+                  <div className="text-2xl">🍺</div>
+                )}
+                {product.category === 'Tequila' && (
+                  <div className="text-2xl">🍸</div>
+                )}
+                {product.category === 'Energy Drinks' && (
+                  <div className="text-2xl font-bold text-red-500">R</div>
+                )}
               </div>
 
-              <button
-                disabled={product.outOfStock}
-                className={`w-full flex items-center justify-center space-x-2 py-2.5 rounded-lg font-medium transition-colors ${
-                  product.outOfStock
-                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                    : 'bg-black text-white hover:bg-gray-800'
-                }`}
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add</span>
-              </button>
+              {/* Product Details */}
+              <div className="flex-1 min-w-0">
+                <h4 className="font-semibold text-gray-900 text-sm mb-1 leading-tight">
+                  {product.name}
+                </h4>
+                <p className="text-xs text-gray-500 mb-1">{product.sku}</p>
+                <p className="text-xs text-gray-400 mb-2">{product.category}</p>
+
+                {/* 21+ Label for alcoholic beverages */}
+                {product.isAlcoholic && (
+                  <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium mb-2">
+                    21+
+                  </span>
+                )}
+              </div>
+
+              {/* Price and Stock */}
+              <div className="text-right flex-shrink-0">
+                <p className="text-lg font-bold text-gray-900 mb-1">
+                  ${product.price.toFixed(2)}
+                </p>
+
+                {/* Stock Status */}
+                <div className="flex items-center justify-end space-x-1 mb-3">
+                  <AlertTriangle
+                    className={`w-3 h-3 ${
+                      product.outOfStock
+                        ? 'text-red-500'
+                        : product.lowStock
+                          ? 'text-orange-500'
+                          : 'text-green-500'
+                    }`}
+                  />
+                  <span
+                    className={`text-xs font-medium ${
+                      product.outOfStock
+                        ? 'text-red-500'
+                        : product.lowStock
+                          ? 'text-orange-500'
+                          : 'text-green-500'
+                    }`}
+                  >
+                    {product.stock} in stock
+                  </span>
+                </div>
+
+                {/* Status Labels */}
+                {product.outOfStock && (
+                  <div className="mb-2">
+                    <span className="inline-block px-2 py-1 bg-red-100 text-red-800 rounded text-xs font-medium">
+                      Out of Stock
+                    </span>
+                  </div>
+                )}
+                {product.lowStock && !product.outOfStock && (
+                  <div className="mb-2">
+                    <span className="inline-block px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs font-medium">
+                      Low Stock
+                    </span>
+                  </div>
+                )}
+
+                {/* Add Button */}
+                {!product.outOfStock && (
+                  <button className="flex items-center space-x-1 px-3 py-1.5 bg-gray-800 text-white rounded text-sm font-medium hover:bg-gray-700 transition-colors">
+                    <Plus className="w-3 h-3" />
+                    <span>Add</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         ))}
