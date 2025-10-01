@@ -1,4 +1,4 @@
-import { BrowserWindow, screen } from 'electron';
+import { app, BrowserWindow, screen } from 'electron';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -17,27 +17,43 @@ function getPreloadPath(): string {
       path.join(__dirname, '../preload.mjs'),
       path.join(__dirname, 'preload.mjs'),
     ];
-    
+
     for (const devPath of devPaths) {
       if (existsSync(devPath)) {
         return devPath;
       }
     }
-    
+
     // Fallback to the most likely path
     return path.join(__dirname, '../../preload.mjs');
   }
-  
+
   // In production, try multiple possible paths based on vite-plugin-electron output
   const possiblePaths = [
-    path.join(process.resourcesPath, 'app.asar.unpacked', 'dist-electron', 'preload.mjs'),
-    path.join(process.resourcesPath, 'app.asar.unpacked', 'dist-electron', 'preload.js'),
-    path.join(process.resourcesPath, 'app.asar.unpacked', 'dist-electron', 'preload', 'preload.js'),
+    path.join(
+      process.resourcesPath,
+      'app.asar.unpacked',
+      'dist-electron',
+      'preload.mjs'
+    ),
+    path.join(
+      process.resourcesPath,
+      'app.asar.unpacked',
+      'dist-electron',
+      'preload.js'
+    ),
+    path.join(
+      process.resourcesPath,
+      'app.asar.unpacked',
+      'dist-electron',
+      'preload',
+      'preload.js'
+    ),
     path.join(__dirname, 'preload.mjs'),
     path.join(__dirname, 'preload.js'),
     path.join(__dirname, 'preload', 'preload.js'),
   ];
-  
+
   // Return the first path that exists, or fallback to the first one
   for (const preloadPath of possiblePaths) {
     try {
@@ -48,7 +64,7 @@ function getPreloadPath(): string {
       // Continue to next path
     }
   }
-  
+
   // Fallback to the most likely path (vite-plugin-electron outputs to dist-electron/preload.js)
   return possiblePaths[0];
 }
@@ -151,26 +167,38 @@ export class WindowManager {
         await this.mainWindow.loadURL(devServerUrl);
       } else {
         // In production, load from built files
-        // The dist folder is packaged in app.asar, so we need to use the correct path
-        const indexPath = path.join(__dirname, '../../../dist/index.html');
-        this.logger.info('Loading from file:', indexPath);
-        this.logger.info('File exists:', existsSync(indexPath));
+        // For packaged apps, we need to use the correct path to access files in app.asar
+        // The dist folder is packaged in app.asar at the root level
         this.logger.info('__dirname:', __dirname);
         this.logger.info('process.resourcesPath:', process.resourcesPath);
-        
-        // For packaged apps, we need to use the correct path
-        // Try the standard path first - Electron should handle asar files automatically
+        this.logger.info('Config isDev:', config.isDev);
+        this.logger.info('Process executable path:', process.execPath);
+        this.logger.info(
+          'App is packaged:',
+          process.env.NODE_ENV === 'production' ||
+            process.mainModule !== undefined
+        );
+
+        // For packaged apps, use app.getAppPath() which handles asar files correctly
+        const appPath = app.getAppPath();
+        this.logger.info('App path:', appPath);
+
+        const indexPath = path.join(appPath, 'dist', 'index.html');
+        this.logger.info('Final index path:', indexPath);
+        this.logger.info('Index exists:', existsSync(indexPath));
+
         try {
           await this.mainWindow.loadFile(indexPath);
-          this.logger.info('Successfully loaded index.html');
+          this.logger.info('Successfully loaded index.html from:', indexPath);
         } catch (loadError) {
-          this.logger.error('Failed to load with standard path:', loadError);
-          
+          this.logger.error('Failed to load from app path:', loadError);
+
           // Fallback: try loading with URL format
           try {
             const fileUrl = `file://${indexPath.replace(/\\/g, '/')}`;
             this.logger.info('Trying URL format:', fileUrl);
             await this.mainWindow.loadURL(fileUrl);
+            this.logger.info('Successfully loaded with URL format');
           } catch (urlError) {
             this.logger.error('Failed to load with URL format:', urlError);
             throw urlError;

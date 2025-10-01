@@ -2,34 +2,37 @@
 echo Testing Liquor Store Management System...
 echo.
 
-echo Checking if portable exe exists...
+echo Checking for available executables...
+set "found_exe="
+
+REM Check release directory
 if exist "release\Liquor Store Management System 1.0.1 Portable.exe" (
-    echo ✓ Portable exe found
+    echo ✓ Portable exe found in release directory
+    set "found_exe=release\Liquor Store Management System 1.0.1 Portable.exe"
 ) else (
-    echo ✗ Portable exe not found
-    goto :end
+    echo ✗ Portable exe not found in release directory
 )
 
-echo.
-echo Checking if unpacked exe exists...
 if exist "release\win-unpacked\Liquor Store Management System.exe" (
-    echo ✓ Unpacked exe found
+    echo ✓ Unpacked exe found in release directory
+    if not defined found_exe set "found_exe=release\win-unpacked\Liquor Store Management System.exe"
 ) else (
-    echo ✗ Unpacked exe not found
+    echo ✗ Unpacked exe not found in release directory
+)
+
+if not defined found_exe (
+    echo.
+    echo ✗ No executable found! Please run 'npm run build' first.
     goto :end
 )
 
 echo.
-echo Attempting to run unpacked version (this might show errors)...
-echo Press any key to continue...
-pause > nul
-start "" "release\win-unpacked\Liquor Store Management System.exe"
-
+echo Found executable: %found_exe%
 echo.
-echo Attempting to run portable version...
+echo Attempting to run the application...
 echo Press any key to continue...
 pause > nul
-start "" "release\Liquor Store Management System 1.0.1 Portable.exe"
+start "" "%found_exe%"
 
 :end
 echo.
