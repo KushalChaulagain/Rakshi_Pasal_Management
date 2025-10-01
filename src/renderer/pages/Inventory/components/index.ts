@@ -1,3 +1,3 @@
-export { ProductActions } from './ProductActions';
-export { ProductTable } from './ProductTable';
-export { StatusBadge } from './StatusBadge';
+export { AlertSummaryCard } from './AlertSummaryCard';
+export { AlertTable } from './AlertTable';
+export { SearchAndFilters } from './SearchAndFilters';

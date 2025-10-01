@@ -86,10 +86,33 @@ export interface StockAlert {
   id: string;
   productId: string;
   productName: string;
+  sku: string;
+  category: string;
   currentStock: number;
   minStock: number;
+  maxStock: number;
   priority: 'low' | 'medium' | 'high' | 'critical';
+  supplier: string;
+  lastRestockDate: Date;
+  daysUntilOut: number;
+  isOutOfStock: boolean;
   createdAt: Date;
+  updatedAt: Date;
+}
+
+// Low Stock Alert Summary types
+export interface AlertSummary {
+  critical: number;
+  highPriority: number;
+  outOfStock: number;
+  resolvedToday: number;
+}
+
+// Alert Filter types
+export interface AlertFilters {
+  search: string;
+  priority: 'all' | 'critical' | 'high' | 'medium' | 'low';
+  category: 'all' | string;
 }
 
 // API Response types

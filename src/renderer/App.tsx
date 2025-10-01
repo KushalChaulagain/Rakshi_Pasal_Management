@@ -19,6 +19,11 @@ const ProductCatalog = React.lazy(() =>
     default: module.ProductCatalog,
   }))
 );
+const LowStockAlerts = React.lazy(() =>
+  import('./pages/Inventory/LowStockAlerts').then(module => ({
+    default: module.LowStockAlerts,
+  }))
+);
 
 function App() {
   return (
@@ -30,6 +35,7 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="pos" element={<PointOfSale />} />
             <Route path="inventory" element={<ProductCatalog />} />
+            <Route path="inventory/alerts" element={<LowStockAlerts />} />
             <Route
               path="*"
               element={
