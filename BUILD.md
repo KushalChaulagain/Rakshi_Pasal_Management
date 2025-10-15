@@ -78,7 +78,8 @@ To build for all platforms, use GitHub Actions by pushing to your repository. Lo
 | `npm run build:installer` | Create Windows installers (NSIS + Portable)                           |
 | `npm run build:mac`       | Create macOS DMG installer (requires macOS)                           |
 | `npm run build:all`       | Create both Windows and macOS installers (requires macOS)             |
-| `npm run clean`           | Remove all build artifacts                                            |
+| `npm run clean`           | Remove all build artifacts (dist, dist-electron, release)             |
+| `npm run clean:release`   | Remove only the release directory (cross-platform)                    |
 
 ## Output Locations
 
@@ -135,6 +136,7 @@ The project includes a GitHub Actions workflow (`.github/workflows/build-release
    - Download `windows-installers` and/or `macos-dmg`
 
 4. **Create a release:**
+
    ```bash
    git tag v1.0.2
    git push origin v1.0.2
