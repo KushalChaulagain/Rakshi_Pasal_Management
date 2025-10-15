@@ -24,6 +24,21 @@ const LowStockAlerts = React.lazy(() =>
     default: module.LowStockAlerts,
   }))
 );
+const StockManagement = React.lazy(() =>
+  import('./pages/Inventory/StockManagement').then(module => ({
+    default: module.StockManagement,
+  }))
+);
+const Suppliers = React.lazy(() =>
+  import('./pages/Inventory/Suppliers').then(module => ({
+    default: module.Suppliers,
+  }))
+);
+const BarcodeScanner = React.lazy(() =>
+  import('./pages/Inventory/BarcodeScanner').then(module => ({
+    default: module.BarcodeScanner,
+  }))
+);
 
 function App() {
   return (
@@ -35,6 +50,9 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="pos" element={<PointOfSale />} />
             <Route path="inventory" element={<ProductCatalog />} />
+            <Route path="inventory/stock" element={<StockManagement />} />
+            <Route path="inventory/suppliers" element={<Suppliers />} />
+            <Route path="inventory/scanner" element={<BarcodeScanner />} />
             <Route path="inventory/alerts" element={<LowStockAlerts />} />
             <Route
               path="*"

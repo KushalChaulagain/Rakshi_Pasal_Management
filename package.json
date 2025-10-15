@@ -11,14 +11,15 @@
     "build:electron": "npm run build:electron:workaround",
     "build:electron:workaround": "npm run build:electron:temp && npm run build:electron:move",
     "build:electron:temp": "npx electron-builder --dir --config.directories.output=dist-electron-build",
-    "build:electron:move": "powershell -Command \"Remove-Item -Recurse -Force release\\win-unpacked -ErrorAction SilentlyContinue; Move-Item -Path dist-electron-build\\win-unpacked -Destination release\\win-unpacked; Remove-Item -Recurse -Force dist-electron-build\"",
+    "build:electron:move": "powershell -Command \"Remove-Item -Recurse -Force release\\win-unpacked -ErrorAction SilentlyContinue; Copy-Item -Path dist-electron-build\\win-unpacked\\* -Destination release\\win-unpacked -Recurse -Force; Remove-Item -Recurse -Force dist-electron-build\"",
     "build:installer": "npm run clean:release && electron-builder",
     "clean:release": "powershell -ExecutionPolicy Bypass -File clean-release.ps1",
     "build:renderer": "vite build",
     "build:main": "tsc -p tsconfig.main.json",
     "build:win": "npm run build -- --win",
-    "build:mac": "npm run build -- --mac",
+    "build:mac": "npm run type-check && npm run lint && npm run build:renderer && npm run build:main && electron-builder --mac",
     "build:linux": "npm run build -- --linux",
+    "build:all": "npm run type-check && npm run lint && npm run build:renderer && npm run build:main && electron-builder --win --mac",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext ts,tsx --fix",
@@ -76,6 +77,7 @@
     "husky": "^9.0.11",
     "jsdom": "^24.0.0",
     "lint-staged": "^15.2.2",
+    "png2icons": "^2.0.1",
     "postcss": "^8.4.47",
     "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
@@ -142,9 +144,38 @@
     },
     "mac": {
       "target": [
-        "dmg"
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ],
-      "icon": "build/icon.icns"
+      "category": "public.app-category.business",
+      "icon": "build/icon.icns",
+      "artifactName": "${productName} ${version}.${ext}"
+    },
+    "dmg": {
+      "title": "${productName} ${version}",
+      "icon": "build/icon.icns",
+      "background": null,
+      "window": {
+        "width": 540,
+        "height": 380
+      },
+      "contents": [
+        {
+          "x": 144,
+          "y": 180
+        },
+        {
+          "x": 396,
+          "y": 180,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
     },
     "linux": {
       "target": [

@@ -124,11 +124,39 @@ npm run build
 
 ### Platform-Specific Builds
 
+**Local Windows Build:**
+
 ```bash
-npm run build:win    # Windows
-npm run build:mac    # macOS
+npm run build:installer  # Creates Windows NSIS and Portable installers
+```
+
+**macOS Build (GitHub Actions - Recommended):**
+
+⚠️ **Important**: macOS builds cannot be created from Windows. Use GitHub Actions instead:
+
+1. Push your code to GitHub
+2. Go to the Actions tab
+3. Download the built DMG files from artifacts
+
+See [BUILD.md](BUILD.md) for detailed instructions.
+
+**Alternative platforms:**
+
+```bash
+npm run build:mac    # macOS (requires Mac)
 npm run build:linux  # Linux
 ```
+
+### 🚀 Automated Builds with GitHub Actions
+
+This project includes automated builds for both Windows and macOS:
+
+- **Automatic**: Builds run on every push to main/master
+- **Multi-platform**: Windows and macOS built simultaneously
+- **No Mac needed**: macOS DMG files built on GitHub's macOS runners
+- **Releases**: Tag commits with `v*` to create GitHub Releases
+
+See `.github/workflows/build-release.yml` and [BUILD.md](BUILD.md) for details.
 
 ## 🔧 Configuration
 
