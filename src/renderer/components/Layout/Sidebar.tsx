@@ -3,7 +3,6 @@ import {
   BarChart3,
   Barcode,
   CreditCard,
-  Database,
   FileText,
   FileWarning,
   HardDrive,
@@ -14,7 +13,7 @@ import {
   TrendingUp,
   UserCheck,
   UserCog,
-  Users,
+  TruckIcon,
   Wine,
 } from 'lucide-react';
 import React from 'react';
@@ -103,7 +102,7 @@ export const Sidebar: React.FC = () => {
             />
             <NavItem
               to="/inventory/stock"
-              icon={<Database />}
+              icon={<Wine />}
               label="Stock Management"
             />
             <NavItem
@@ -114,7 +113,7 @@ export const Sidebar: React.FC = () => {
             />
             <NavItem
               to="/inventory/suppliers"
-              icon={<Users />}
+              icon={<TruckIcon />}
               label="Suppliers"
             />
             <NavItem
